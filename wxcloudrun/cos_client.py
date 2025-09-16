@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime
 import config
 
+logger = logging.getLogger('log')
 
 class COSClient:
     def __init__(self):
@@ -96,6 +97,7 @@ class COSClient:
                 ContentType=self._get_content_type(file_ext)
             )
             print(response )
+            logger.info("upload_cover_image response= {} ".format(response))
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 # 生成文件访问URL
                 file_url = f"https://{self.bucket}.cos.{config.COS_REGION}.myqcloud.com/{cos_key}"
