@@ -6,6 +6,7 @@ import os
 import uuid
 from datetime import datetime
 import config
+import logging
 
 logger = logging.getLogger('log')
 
