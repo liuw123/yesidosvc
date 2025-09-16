@@ -24,8 +24,8 @@ class CoverPicture(db.Model):
     picture_name = db.Column(db.String(255), nullable=False, unique=True)
     file_url = db.Column(db.String(500), nullable=False)
     primary_cover = db.Column(db.Boolean, default=False)
-    created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False, default=func.now())
-    updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now())
+    created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False)
+    updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False)
 
 
 # 用户表
@@ -38,5 +38,5 @@ class User(db.Model):
     comment = db.Column(db.Text)
     role = db.Column(db.Enum('ADMIN', 'VIP', 'GUEST'), default='GUEST')
     extra_message = db.Column(db.Text)
-    created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False, default=func.now())
-    updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now())
+    created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False)
+    updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False)
