@@ -63,7 +63,7 @@ class COSClient:
             return output.getvalue()
             
         except Exception as e:
-            print(f"图片调整大小失败: {str(e)}")
+            logger.error(f"图片调整大小失败: {str(e)}")
             return image_data  # 如果调整失败，返回原始数据
     
     def upload_cover_image(self, file_data, original_filename):
@@ -98,12 +98,12 @@ class COSClient:
                 ContentType=self._get_content_type(file_ext)
             )
             logger.error("upload_cover_image response= {} ".format(response))
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            if 'ETag' in response:
                 # 生成文件访问URL
                 file_url = f"https://{self.bucket}.cos.{config.COS_REGION}.myqcloud.com/{cos_key}"
                 return True, file_url, picture_name
             else:
-                return False, f"上传失败，状态码: {response['ResponseMetadata']['HTTPStatusCode']}", None
+                return False, f"上传失败 {response}", None
                 
         except Exception as e:
             return False, f"上传失败: {str(e)}", None
@@ -121,10 +121,10 @@ class COSClient:
                 Key=cos_key
             )
             
-            if response['ResponseMetadata']['HTTPStatusCode'] == 204:
+            if 'ETag' in response:
                 return True, "删除成功"
             else:
-                return False, f"删除失败，状态码: {response['ResponseMetadata']['HTTPStatusCode']}"
+                return False, f"删除失败 {response}"
                 
         except Exception as e:
             return False, f"删除失败: {str(e)}"
@@ -141,9 +141,9 @@ class COSClient:
                 Bucket=self.bucket,
                 Key=cos_key
             )
-            return response['ResponseMetadata']['HTTPStatusCode'] == 200
+            return response is not None
         except Exception as e:
-            print(f"检查文件存在性失败: {str(e)}")
+            logger.error(f"检查文件存在性失败: {str(e)}")
             return False
     
     def _get_content_type(self, file_ext):
