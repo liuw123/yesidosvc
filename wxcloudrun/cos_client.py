@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime
 import config
 import logging
+import requests
 
 logger = logging.getLogger('log')
 
@@ -21,6 +22,33 @@ class COSClient:
         )
         self.client = CosS3Client(cos_config)
         self.bucket = config.COS_BUCKET_NAME
+
+    def get_file_meta(self, cos_key):
+        """
+        获取文件的元信息
+        :param cos_key: 文件在COS中的路径
+        :return: 元信息字典或None
+        """
+        url = 'http://api.weixin.qq.com/_/cos/metaid/encode'
+
+        # Replace with your actual bucket name and cloud path
+        bucket = 'your-bucket-name'
+        cloudpath = 'your/cloud/path'
+
+        payload = {
+            'openid': '',  # 管理端为空
+            'bucket': config.COS_BUCKET_NAME,
+            'paths': [cos_key]
+        }
+
+        try:
+            response = requests.post(url, json=payload)
+            response.raise_for_status()  # Raise error for bad status codes
+            authres = response.json()
+            return authres
+        except requests.RequestException as e:
+            logger.error(f"Request failed: {e}")
+            return None
     
     def resize_image(self, image_data, max_size=1440):
         """
@@ -91,13 +119,18 @@ class COSClient:
             
             # COS中的文件路径
             cos_key = f"covers/{picture_name}"
+
+            authres = self.get_file_meta(cos_key)
             
             # 上传到COS
             response = self.client.put_object(
                 Bucket=self.bucket,
                 Body=resized_data,
                 Key=cos_key,
-                ContentType=self._get_content_type(file_ext)
+                ContentType=self._get_content_type(file_ext),
+                Metadata = {
+                    'x-cos-meta-fileid': auth['respdata']['x_cos_meta_field_strs'][0]
+                }
             )
             if 'ETag' in response:
                 # 生成文件访问URL
