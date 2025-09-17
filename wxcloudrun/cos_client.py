@@ -129,7 +129,7 @@ class COSClient:
                 Key=cos_key,
                 ContentType=self._get_content_type(file_ext),
                 Metadata = {
-                    'x-cos-meta-fileid': auth['respdata']['x_cos_meta_field_strs'][0]
+                    'x-cos-meta-fileid': authres['respdata']['x_cos_meta_field_strs'][0]
                 }
             )
             if 'ETag' in response:
