@@ -10,4 +10,4 @@ SQLAlchemy==1.4.29
 Werkzeug==2.0.2
 cos-python-sdk-v5==1.9.25
 Pillow==9.5.0
-requests==2.32.5
+requests==2.32.4
