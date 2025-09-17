@@ -126,7 +126,7 @@ class COSClient:
                 Key=cos_key
             )
             
-            if 'ETag' in response:
+            if response is not None:
                 return True, "删除成功"
             else:
                 return False, f"删除失败 {response}"
