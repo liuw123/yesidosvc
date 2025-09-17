@@ -24,6 +24,7 @@ class CoverPicture(db.Model):
     picture_name = db.Column(db.String(255), nullable=False, unique=True)
     file_url = db.Column(db.String(500), nullable=False)
     primary_cover = db.Column(db.Boolean, default=False)
+    major_color = db.Column(db.String(7))  # Store hex color like #FF5733
     created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False, default=func.now())
     updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now())
 

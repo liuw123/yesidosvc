@@ -5,6 +5,7 @@ from PIL import Image
 import os
 import uuid
 from datetime import datetime
+from colorthief import ColorThief
 import config
 import logging
 import requests
@@ -49,6 +50,33 @@ class COSClient:
         except requests.RequestException as e:
             logger.error(f"Request failed: {e}")
             return None
+    
+    def extract_major_color(self, image_data):
+        """
+        提取图片的主要颜色
+        :param image_data: 图片二进制数据
+        :return: 十六进制颜色字符串，如 #FF5733
+        """
+        try:
+            # 将图片数据保存到临时BytesIO对象
+            image_io = io.BytesIO(image_data)
+            
+            # 使用ColorThief提取主要颜色
+            color_thief = ColorThief(image_io)
+            dominant_color = color_thief.get_color(quality=1)
+            
+            # 将RGB转换为十六进制
+            hex_color = "#{:02x}{:02x}{:02x}".format(
+                dominant_color[0], 
+                dominant_color[1], 
+                dominant_color[2]
+            )
+            
+            return hex_color
+            
+        except Exception as e:
+            logger.error(f"提取主要颜色失败: {str(e)}")
+            return "#FFFFFF"  # 默认返回白色
     
     def resize_image(self, image_data, max_size=1440):
         """
@@ -99,9 +127,12 @@ class COSClient:
         上传封面图片到腾讯云COS
         :param file_data: 文件二进制数据
         :param original_filename: 原始文件名
-        :return: (success, file_url, picture_name) 或 (success, error_message, None)
+        :return: (success, file_url, picture_name, major_color) 或 (success, error_message, None, None)
         """
         try:
+            # 提取主要颜色（在调整大小之前，以获得更准确的颜色）
+            major_color = self.extract_major_color(file_data)
+            
             # 调整图片大小
             resized_data = self.resize_image(file_data)
             
@@ -135,12 +166,12 @@ class COSClient:
             if 'ETag' in response:
                 # 生成文件访问URL
                 file_url = f"cloud://{config.ENV_ID}.{config.COS_BUCKET_NAME}/{cos_key}"
-                return True, file_url, picture_name
+                return True, file_url, picture_name, major_color
             else:
-                return False, f"上传失败 {response}", None
+                return False, f"上传失败 {response}", None, None
                 
         except Exception as e:
-            return False, f"上传失败: {str(e)}", None
+            return False, f"上传失败: {str(e)}", None, None
     
     def delete_cover_image(self, picture_name):
         """

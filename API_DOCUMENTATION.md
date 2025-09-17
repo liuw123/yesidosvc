@@ -30,7 +30,8 @@ Admin-Secret: your_admin_secret_key
   "data": {
     "picture_name": "cover_20241216_123456_abcd1234.jpg",
     "file_url": "https://bucket.oss-endpoint.com/covers/cover_20241216_123456_abcd1234.jpg",
-    "primary_cover": false
+    "primary_cover": false,
+    "major_color": "#FF5733"
   }
 }
 ```
@@ -39,6 +40,7 @@ Admin-Secret: your_admin_secret_key
 - Automatically resizes images to max 1440px while maintaining aspect ratio
 - Generates unique filename with timestamp and UUID
 - Uploads to Tencent COS and stores metadata in database
+- Extracts major color from image using ColorThief algorithm
 - If marked as primary cover, automatically unmarks other primary covers
 
 ### 2. Delete Cover Picture
@@ -77,6 +79,7 @@ Admin-Secret: your_admin_secret_key
         "picture_name": "cover_20241216_123456_abcd1234.jpg",
         "file_url": "https://bucket.oss-endpoint.com/covers/cover_20241216_123456_abcd1234.jpg",
         "primary_cover": true,
+        "major_color": "#FF5733",
         "created_at": "2024-12-16 12:34:56",
         "updated_at": "2024-12-16 12:34:56"
       }
@@ -360,6 +363,7 @@ curl -X GET http://localhost:5000/api/user/test_wechat_id
 - `picture_name`: Unique picture name (VARCHAR(255))
 - `file_url`: Tencent COS file URL (VARCHAR(500))
 - `primary_cover`: Whether it's the primary cover (BOOLEAN)
+- `major_color`: Extracted major color in hex format (VARCHAR(7), e.g., #FF5733)
 - `createdAt`: Creation timestamp (TIMESTAMP)
 - `updatedAt`: Update timestamp (TIMESTAMP)
 

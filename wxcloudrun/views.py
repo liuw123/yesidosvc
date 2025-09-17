@@ -122,7 +122,7 @@ def upload_cover_picture():
         file_data = file.read()
         
         # 上传到COS
-        success, result, picture_name = cos_client.upload_cover_image(file_data, file.filename, overide_filename)
+        success, result, picture_name, major_color = cos_client.upload_cover_image(file_data, file.filename)
         
         if not success:
             return make_err_response(f'上传失败: {result}')
@@ -132,6 +132,7 @@ def upload_cover_picture():
         cover_picture.picture_name = picture_name
         cover_picture.file_url = result
         cover_picture.primary_cover = primary_cover
+        cover_picture.major_color = major_color
         cover_picture.created_at = datetime.now()
         cover_picture.updated_at = datetime.now()
         
@@ -143,7 +144,8 @@ def upload_cover_picture():
             return make_succ_response({
                 'picture_name': picture_name,
                 'file_url': result,
-                'primary_cover': primary_cover
+                'primary_cover': primary_cover,
+                'major_color': major_color
             })
         else:
             # 如果数据库保存失败，删除COS中的文件
@@ -196,6 +198,7 @@ def list_cover_pictures():
                 'picture_name': picture.picture_name,
                 'file_url': picture.file_url,
                 'primary_cover': picture.primary_cover,
+                'major_color': picture.major_color,
                 'created_at': picture.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                 'updated_at': picture.updated_at.strftime('%Y-%m-%d %H:%M:%S')
             })
