@@ -66,7 +66,7 @@ class COSClient:
             logger.error(f"图片调整大小失败: {str(e)}")
             return image_data  # 如果调整失败，返回原始数据
     
-    def upload_cover_image(self, file_data, original_filename):
+    def upload_cover_image(self, file_data, original_filename, override_filename=False):
         """
         上传封面图片到腾讯云COS
         :param file_data: 文件二进制数据
@@ -83,9 +83,11 @@ class COSClient:
                 file_ext = '.jpg'  # 默认扩展名
             
             # 使用时间戳和UUID生成唯一文件名
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            unique_id = str(uuid.uuid4())[:8]
-            picture_name = f"cover_{timestamp}_{unique_id}{file_ext}"
+            picture_name = original_filename
+            if override_filename:
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_id = str(uuid.uuid4())[:8]
+                picture_name = f"cover_{timestamp}_{unique_id}{file_ext}"
             
             # COS中的文件路径
             cos_key = f"covers/{picture_name}"

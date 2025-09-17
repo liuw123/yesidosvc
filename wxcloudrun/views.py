@@ -116,12 +116,13 @@ def upload_cover_picture():
         
         # 获取其他参数
         primary_cover = request.form.get('primary_cover', 'false').lower() == 'true'
+        overide_filename = request.form.get('override_filename', 'false').lower() == 'true'
         
         # 读取文件数据
         file_data = file.read()
         
         # 上传到COS
-        success, result, picture_name = cos_client.upload_cover_image(file_data, file.filename)
+        success, result, picture_name = cos_client.upload_cover_image(file_data, file.filename, overide_filename)
         
         if not success:
             return make_err_response(f'上传失败: {result}')
