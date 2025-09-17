@@ -32,10 +32,6 @@ class COSClient:
         """
         url = 'http://api.weixin.qq.com/_/cos/metaid/encode'
 
-        # Replace with your actual bucket name and cloud path
-        bucket = 'your-bucket-name'
-        cloudpath = 'your/cloud/path'
-
         payload = {
             'openid': '',  # 管理端为空
             'bucket': config.COS_BUCKET_NAME,
@@ -64,6 +60,8 @@ class COSClient:
             # 使用ColorThief提取主要颜色
             color_thief = ColorThief(image_io)
             dominant_color = color_thief.get_color(quality=1)
+
+            logger.error(f"提取的主要颜色RGB值: {dominant_color}")
             
             # 将RGB转换为十六进制
             hex_color = "#{:02x}{:02x}{:02x}".format(
@@ -130,11 +128,11 @@ class COSClient:
         :return: (success, file_url, picture_name, major_color) 或 (success, error_message, None, None)
         """
         try:
-            # 提取主要颜色（在调整大小之前，以获得更准确的颜色）
-            major_color = self.extract_major_color(file_data)
-            
             # 调整图片大小
             resized_data = self.resize_image(file_data)
+
+            # 提取主要颜色
+            major_color = self.extract_major_color(resized_data)
             
             # 生成唯一的文件名
             file_ext = os.path.splitext(original_filename)[1].lower()
