@@ -16,3 +16,5 @@ COS_BUCKET_NAME = os.environ.get("COS_BUCKET", "wechat-miniprogram")
 
 # 管理员密钥
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "admin_secret_key_2024")
+
+ENV_ID = os.environ.get("ENV_ID", "your_env_id")

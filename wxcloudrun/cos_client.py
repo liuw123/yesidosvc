@@ -101,11 +101,7 @@ class COSClient:
             )
             if 'ETag' in response:
                 # 生成文件访问URL
-                file_url = f"https://{self.bucket}.cos.{config.COS_REGION}.myqcloud.com/{cos_key}"
-                file_url = self.client.get_object_url(
-                    Bucket=self.bucket,
-                    Key=cos_key
-                )
+                file_url = f"cloud://{config.ENV_ID}.{config.COS_BUCKET}/{cos_key}"
                 return True, file_url, picture_name
             else:
                 return False, f"上传失败 {response}", None
